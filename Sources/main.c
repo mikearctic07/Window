@@ -39,6 +39,7 @@
 
 
 __IO uint32_t Register;
+__IO uint32_t RegistroActual;
 __IO uint32_t i;
 
 /*!
@@ -47,6 +48,41 @@ __IO uint32_t i;
  * - startup asm routine
  * - main()
 */
+
+unsigned int RegisterUp(unsigned int RegistroActual);
+unsigned int RegisterDown(unsigned int RegistroActual);
+
+unsigned int RegisterUp(unsigned int RegistroActual)
+{
+    unsigned int RightBits;
+    if(RegistroActual>0x3F)
+    {
+    	RightBits=(RegistroActual<<2)+3;
+    	RightBits=RightBits&0xF3F;
+    }
+    else
+    {
+    	RightBits=RegistroActual;
+    }
+
+    return RightBits;
+}
+
+unsigned int RegisterDown(unsigned int RegistroActual)
+{
+    unsigned int RightBits;
+    if(RegistroActual>0x3F)
+    {
+    	RightBits=(RegistroActual<<2)+3;
+    	RightBits=RightBits&0xF3F;
+    }
+    else
+    {
+    	RightBits=RegistroActual;
+    }
+
+    return RightBits;
+}
 
   void SOSC_init_8MHz(void)
   {
@@ -93,13 +129,17 @@ __IO uint32_t i;
 	   Register=PORTC->ISFR;
 	   if(Register==0x00001000)
 	   {
+
 		   PORTC->PCR[12] |= (1 << 24);
-		   PTD->PTOR |=(1<<0);
+		   RegistroActual=(RegistroActual<<1)+1;
+		   RegistroActual=RegistroActual&0x3FF;
+		   PTB-> PCOR |= RegisterUp(RegistroActual);
 	   }
 	   else
 	   {
 		   PORTC->PCR[13] |= (1 << 24);
-		   PTD->PTOR |=(1<<16);
+		   RegistroActual=RegistroActual>>1;
+		   PTB-> PSOR = ~RegisterDown(RegistroActual);
 	   }
 
 
@@ -149,7 +189,7 @@ int main(void)
     clock_setup_80MHz();
     WDOG_disable();
     PINS_DRV_SetPins(PTD,(1<<0|1<<15|1<<16));
-    PTB-> PCOR |= 0xF3F;
+    PTB-> PSOR |= 0xF3F;
     //PTB-> PCOR |= 1<<6;
     INT_SYS_EnableIRQ(PORTC_IRQn);
 
