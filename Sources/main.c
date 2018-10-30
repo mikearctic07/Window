@@ -39,6 +39,8 @@
 
 
 __IO uint32_t Register;
+__IO uint32_t i;
+
 /*!
   \brief The main function for the project.
   \details The startup initialization sequence is the following:
@@ -114,12 +116,24 @@ int main(void)
   /* Write your code here */
     PCC-> PCCn[PCC_PORTC_INDEX] = PCC_PCCn_CGC_MASK; /*Enable clock to PORT C*/
     PCC-> PCCn[PCC_PORTD_INDEX] = PCC_PCCn_CGC_MASK;/*Enable clock to PORT D*/
+    PCC-> PCCn[PCC_PORTB_INDEX] = PCC_PCCn_CGC_MASK;/*Enable clock to PORT B*/
 
     PTC->PDDR &= ~(1<<PTC12);
     PORTC->PCR[12] = 0x00098110;
 
     PTC->PDDR &= ~(1<<PTC13);
     PORTC->PCR[13] = 0x00098110;
+    /*PTB6 and PTB7 are not used because they're reserved for external oscillator*/
+    PTB->PDDR |= 0xF3F;
+    for(i=0;i<=5;i++)
+    {
+    	PORTB->PCR[i] = 0x00000100;
+    }
+
+    for(i=8;i<=11;i++)
+    {
+    	PORTB->PCR[i] = 0x00000100;
+    }
 
     PTD->PDDR |= 1<<PTD0;
     PORTD->PCR[0] = 0x00000100;
@@ -135,6 +149,8 @@ int main(void)
     clock_setup_80MHz();
     WDOG_disable();
     PINS_DRV_SetPins(PTD,(1<<0|1<<15|1<<16));
+    PTB-> PCOR |= 0xF3F;
+    //PTB-> PCOR |= 1<<6;
     INT_SYS_EnableIRQ(PORTC_IRQn);
 
 
