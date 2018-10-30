@@ -129,7 +129,6 @@ int main(void)
 
     PTD->PDDR |= 1<<PTD16;
     PORTD->PCR[16] = 0x00000100;
-    PTD->
 
     SOSC_init_8MHz();
     SPLL_init_160MHz();
