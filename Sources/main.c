@@ -163,14 +163,14 @@ void DownMovement(void)
 	   if(InterruptRegister==0x00001000)
 	   {
 		   PORTC->PCR[12] |= (1 << 24);
-       while((PTC->PDIR & (1<<PTC12)) && counter>=50)
+       while((PTC->PDIR & (1<<PTC12)))
 
 		      		   {
 		      		   	   PTD->PTOR |=(1<<16);
 		      		   	   LPIT0_Ch0_IRQHandler(10);
 		      			   PTD->PTOR |=(1<<16);
 		      			   counter++;
-		      			 if ((counter>=10) && (counter%400 ==0))
+		      			 if ((counter>=10) && (counter%40 ==0))
 		      			 {
 //		      				 PTD->PCOR |=(1<<15);
 		      				 UpMovement();
@@ -179,7 +179,17 @@ void DownMovement(void)
 		      		   }
 					   if((counter<50) && (counter>1))
 					   {
-						   UpMovement();
+						   while(CurrentRegister<0x3FF)
+						   {
+							   PTD->PTOR |=(1<<16);
+							   LPIT0_Ch0_IRQHandler(10);
+							   PTD->PTOR |=(1<<16);
+							   counter++;
+							   if ((counter>=10) && (counter%40 ==0))
+							   		      			 {
+							   		      				 UpMovement();
+							   		      			 }
+						   }
 					   }
 
 
@@ -188,23 +198,31 @@ void DownMovement(void)
 	   else
 	   {
         PORTC->PCR[13] |= (1 << 24);
-        while((PTC->PDIR & (1<<PTC13)) && counter>=50)
+        while((PTC->PDIR & (1<<PTC13)))
 			   {
-			   LPIT0_Ch0_IRQHandler(10);
-			   counter++;
-			   if ((counter>=10) && (counter%400 ==0))
+        			PTD->PTOR |=(1<<0);
+				   LPIT0_Ch0_IRQHandler(10);
+				   PTD->PTOR |=(1<<0);
+				   counter++;
+			   if ((counter>=10) && (counter%40 ==0))
 			   		      			 {
-			   //		      				 PTD->PCOR |=(1<<15);
-			   		      				 DownMovement();
+				   	   	   	   	   	   DownMovement();
 			   		      			 }
 			   }
-		   	   if ((counter<50) && (counter>1))
-		   	   {
-		   		   while(CurrentRegister>0 )
-		   		   {
-		   			   DownMovement();
-		   		   }
-		   	   }
+        if((counter<50) && (counter>1))
+        					   {
+        						   while((CurrentRegister>0))
+        						   {
+        							   PTD->PTOR |=(1<<0);
+        							   LPIT0_Ch0_IRQHandler(10);
+        							   PTD->PTOR |=(1<<0);
+        							   counter++;
+        							   if ((counter>=10) && (counter%40 ==0))
+        							   		      			 {
+        								   	   	   	   	   	   DownMovement();
+        							   		      			 }
+        						   }
+        					   }
 
 	   }
 
