@@ -87,6 +87,20 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
     return RealBits;
 }
 
+
+  void LPIT0_Ch0_IRQHandler (void)
+      {
+      	PCC->PCCn[PCC_LPIT_INDEX] = PCC_PCCn_PCS(6); /*Clock Src = 6 (SPLL2_DIV_CLK)*/
+      	PCC->PCCn[PCC_LPIT_INDEX] |=PCC_PCCn_CGC_MASK;
+      	LPIT0->MCR=0x00000001;
+      	LPIT0->MIER =0x0000001;
+      	LPIT0->TMR[0].TVAL = 10*40000; /*Chan 0 Timeout period: 40 M clocks*/
+      	LPIT0->TMR[0].TCTRL = 0x00000001; /*T_EN=1  : Timer channel is enabled*/
+      	while(0 == (LPIT0->MSR & LPIT_MSR_TIF0_MASK));
+      	LPIT0->MSR |= LPIT_MSR_TIF0_MASK;
+      	LPIT0->TMR[0].TCTRL = 0x00000000;
+      }
+
   void SOSC_init_8MHz(void)
   {
   	 SCG->SOSCDIV=0x00000101; /* SOSCDIV1 & SOSCDIV2 =1: divide by 1 */
@@ -129,6 +143,8 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 
   void PORTC_IRQHandler(void)
   {
+    __IO uint32_t counter=0;
+    
 	  InterruptRegister=PORTC->ISFR;
 	   if(InterruptRegister==0x00001000)
 	   {
@@ -136,6 +152,20 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 		   CurrentRegister=(CurrentRegister<<1)+1;
 		   CurrentRegister=CurrentRegister&FIRTS_10_BITS;
 		   PTB-> PCOR |= RegisterUp(CurrentRegister);
+        while(PTC->PDIR & (1<<PTC12))
+		      		   {
+		      		   	   PTD->PTOR |=(1<<16);
+		      		   	   LPIT0_Ch0_IRQHandler();
+		      			   PTD->PTOR |=(1<<16);
+		      			   counter++;
+		      			 if (counter>=50)
+		      			 {
+		      				 PTD->PCOR |=(1<<15);
+		      			 }
+
+		      		   }PTD->PSOR |= (1<<PTD15);
+
+
 	   }
 	   else
 	   {
