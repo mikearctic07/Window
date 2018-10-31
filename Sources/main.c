@@ -155,59 +155,74 @@ void DownMovement(void)
       	WDOG->CS = 0x00002100;
       }
 
-  void PORTC_IRQHandler(void)
-  {
+void UpTransition(__IO uint32_t counter)
+{
+	PTD->PTOR |=(1<<16);
+    LPIT0_Ch0_IRQHandler(10);
+    PTD->PTOR |=(1<<16);
+
+    if ((counter>=1) && (counter%40 ==0))
+    {
+ 	   UpMovement();
+    }
+}
+
+void DownTransition(__IO uint32_t counter)
+{
+	PTD->PTOR |=(1<<0);
+    LPIT0_Ch0_IRQHandler(10);
+    PTD->PTOR |=(1<<0);
+
+    if ((counter>=1) && (counter%40 ==0))
+    {
+ 	   DownMovement();
+    }
+}
+
+
+
+
+void PORTC_IRQHandler(void)
+{
     __IO uint32_t counter=0;
     
 	  InterruptRegister=PORTC->ISFR;
 	   if(InterruptRegister==0x00001000)
 	   {
 		   PORTC->PCR[12] |= (1 << 24);
-       while((PTC->PDIR & (1<<PTC12)) && counter>=50)
-
-		      		   {
-		      		   	   PTD->PTOR |=(1<<16);
-		      		   	   LPIT0_Ch0_IRQHandler(10);
-		      			   PTD->PTOR |=(1<<16);
-		      			   counter++;
-		      			 if ((counter>=10) && (counter%400 ==0))
-		      			 {
-//		      				 PTD->PCOR |=(1<<15);
-		      				 UpMovement();
-		      			 }
-
-		      		   }
-					   if((counter<50) && (counter>1))
-					   {
-						   UpMovement();
-					   }
-
-
+		   while((PTC->PDIR & (1<<PTC12)))
+		   {
+			   UpTransition(counter);
+			   counter++;
+		   }
+		   if((counter<50) && (counter>1))
+		   {
+			   while((CurrentRegister<0x3FF) && (PORTC->ISFR ==0 ))
+			   {
+				   UpTransition(counter);
+				   counter++;
+			   }
+			}
 
 	   }
 	   else
 	   {
-        PORTC->PCR[13] |= (1 << 24);
-        while((PTC->PDIR & (1<<PTC13)) && counter>=50)
-			   {
-			   LPIT0_Ch0_IRQHandler(10);
-			   counter++;
-			   if ((counter>=10) && (counter%400 ==0))
-			   		      			 {
-			   //		      				 PTD->PCOR |=(1<<15);
-			   		      				 DownMovement();
-			   		      			 }
-			   }
-		   	   if ((counter<50) && (counter>1))
-		   	   {
-		   		   while(CurrentRegister>0 )
-		   		   {
-		   			   DownMovement();
-		   		   }
-		   	   }
+		   PORTC->PCR[13] |= (1 << 24);
+		   while((PTC->PDIR & (1<<PTC13)))
+			{
+				DownTransition(counter);
+				counter++;
+			}
+			if((counter<50) && (counter>1))
+			{
+				while((CurrentRegister>0) && (PORTC->ISFR ==0 ))
+				{
+					DownTransition(counter);
+					counter++;
+				}
+			}
 
 	   }
-
 
   }
 int main(void)
