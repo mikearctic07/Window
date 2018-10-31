@@ -51,12 +51,12 @@ __IO uint32_t ItaratorPinsB;
  * - main()
 */
 
-unsigned int RegisterUp(unsigned int CurrentRegisterUp);
-unsigned int RegisterDown(unsigned int CurrentRegisterDown);
+void RegisterUp(__IO uint32_t CurrentRegisterUp);
+void RegisterDown(__IO uint32_t CurrentRegisterDown);
 
-unsigned int RegisterUp(unsigned int CurrentRegisterUp)
+void RegisterUp(__IO uint32_t CurrentRegisterUp)
 {
-    unsigned int RealBits;
+    __IO uint32_t RealBits;
     /*In order to not use PB6 and PB7*/
     if(CurrentRegisterUp>FIRST_5_BITS)
     {
@@ -68,12 +68,12 @@ unsigned int RegisterUp(unsigned int CurrentRegisterUp)
     	RealBits=CurrentRegisterUp;
     }
 
-    return RealBits;
+    PTB-> PCOR |= RealBits;
 }
 
-unsigned int RegisterDown(unsigned int CurrentRegisterDown)
+void RegisterDown(__IO uint32_t CurrentRegisterDown)
 {
-    unsigned int RealBits;
+    __IO uint32_t RealBits;
     if(CurrentRegisterDown>FIRST_5_BITS)
     {
     	RealBits=(CurrentRegisterDown<<2)+3;
@@ -84,7 +84,7 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
     	RealBits=CurrentRegisterDown;
     }
 
-    return RealBits;
+    PTB-> PSOR = ~RealBits;
 }
 
 
@@ -151,7 +151,7 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 		   PORTC->PCR[12] |= (1 << 24);
 		   CurrentRegister=(CurrentRegister<<1)+1;
 		   CurrentRegister=CurrentRegister&FIRTS_10_BITS;
-		   PTB-> PCOR |= RegisterUp(CurrentRegister);
+		   RegisterUp(CurrentRegister);
         while(PTC->PDIR & (1<<PTC12))
 		      		   {
 		      		   	   PTD->PTOR |=(1<<16);
@@ -171,7 +171,7 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 	   {
 		   PORTC->PCR[13] |= (1 << 24);
 		   CurrentRegister=CurrentRegister>>1;
-		   PTB-> PSOR = ~RegisterDown(CurrentRegister);
+		   RegisterDown(CurrentRegister);
 	   }
 
 
