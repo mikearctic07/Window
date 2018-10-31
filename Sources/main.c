@@ -38,14 +38,25 @@
 
 
 
-__IO uint32_t Register;
+
 /*!
   \brief The main function for the project.
   \details The startup initialization sequence is the following:
  * - startup asm routine
  * - main()
 */
-
+  void LPIT0_Ch0_IRQHandler (void)
+      {
+      	PCC->PCCn[PCC_LPIT_INDEX] = PCC_PCCn_PCS(6); /*Clock Src = 6 (SPLL2_DIV_CLK)*/
+      	PCC->PCCn[PCC_LPIT_INDEX] |=PCC_PCCn_CGC_MASK;
+      	LPIT0->MCR=0x00000001;
+      	LPIT0->MIER =0x0000001;
+      	LPIT0->TMR[0].TVAL = 10*40000; /*Chan 0 Timeout period: 40 M clocks*/
+      	LPIT0->TMR[0].TCTRL = 0x00000001; /*T_EN=1  : Timer channel is enabled*/
+      	while(0 == (LPIT0->MSR & LPIT_MSR_TIF0_MASK));
+      	LPIT0->MSR |= LPIT_MSR_TIF0_MASK;
+      	LPIT0->TMR[0].TCTRL = 0x00000000;
+      }
   void SOSC_init_8MHz(void)
   {
   	 SCG->SOSCDIV=0x00000101; /* SOSCDIV1 & SOSCDIV2 =1: divide by 1 */
@@ -88,11 +99,25 @@ __IO uint32_t Register;
 
   void PORTC_IRQHandler(void)
   {
+	  __IO uint32_t counter=0;
+	  __IO uint32_t Register;
 	   Register=PORTC->ISFR;
 	   if(Register==0x00001000)
 	   {
-		   PORTC->PCR[12] |= (1 << 24);
-		   PTD->PTOR |=(1<<0);
+		   while(PTC->PDIR & (1<<PTC12))
+		      		   {
+		      		   	   PORTC->PCR[12] |=(1<<24);
+		      		   	   PTD->PTOR |=(1<<16);
+		      		   	   LPIT0_Ch0_IRQHandler();
+		      			   PTD->PTOR |=(1<<16);
+		      			   counter++;
+		      			 if (counter>=50)
+		      			 {
+		      				 PTD->PCOR |=(1<<15);
+		      			 }
+
+		      		   }PTD->PSOR |= (1<<PTD15);
+
 	   }
 	   else
 	   {
