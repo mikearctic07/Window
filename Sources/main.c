@@ -37,12 +37,12 @@
 #define PTC13 13
 #define OUTPUT_LEDS 0xF3F
 #define FIRST_5_BITS 0x3F
-#define FIRTS_10_BITS 0x3FF
+#define FIRST_10_BITS 0x3FF
 #define GPIO_ACTIVE 0x00000100
 
 __IO uint32_t InterruptRegister;
 __IO uint32_t CurrentRegister;
-__IO uint32_t ItaratorPinsB;
+__IO uint32_t IteratorPinsB;
 
 /*!
   \brief The main function for the project.
@@ -51,12 +51,14 @@ __IO uint32_t ItaratorPinsB;
  * - main()
 */
 
-unsigned int RegisterUp(unsigned int CurrentRegisterUp);
-unsigned int RegisterDown(unsigned int CurrentRegisterDown);
+void RegisterUp(__IO uint32_t CurrentRegisterUp);
+void RegisterDown(__IO uint32_t CurrentRegisterDown);
+void UpMovement(void);
+void DownMovement(void);
 
-unsigned int RegisterUp(unsigned int CurrentRegisterUp)
+void RegisterUp(__IO uint32_t CurrentRegisterUp)
 {
-    unsigned int RealBits;
+    __IO uint32_t RealBits;
     /*In order to not use PB6 and PB7*/
     if(CurrentRegisterUp>FIRST_5_BITS)
     {
@@ -68,12 +70,12 @@ unsigned int RegisterUp(unsigned int CurrentRegisterUp)
     	RealBits=CurrentRegisterUp;
     }
 
-    return RealBits;
+    PTB-> PCOR |= RealBits;
 }
 
-unsigned int RegisterDown(unsigned int CurrentRegisterDown)
+void RegisterDown(__IO uint32_t CurrentRegisterDown)
 {
-    unsigned int RealBits;
+    __IO uint32_t RealBits;
     if(CurrentRegisterDown>FIRST_5_BITS)
     {
     	RealBits=(CurrentRegisterDown<<2)+3;
@@ -84,9 +86,21 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
     	RealBits=CurrentRegisterDown;
     }
 
-    return RealBits;
+    PTB-> PSOR = ~RealBits;
 }
 
+void UpMovement(void)
+{
+	CurrentRegister=(CurrentRegister<<1)+1;
+	CurrentRegister=CurrentRegister&FIRST_10_BITS;
+	RegisterUp(CurrentRegister);
+}
+
+void DownMovement(void)
+{
+	CurrentRegister=CurrentRegister>>1;
+	RegisterDown(CurrentRegister);
+}
 
   void LPIT0_Ch0_IRQHandler (__IO uint32_t MILIS)
       {
@@ -149,10 +163,8 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 	   if(InterruptRegister==0x00001000)
 	   {
 		   PORTC->PCR[12] |= (1 << 24);
-		   CurrentRegister=(CurrentRegister<<1)+1;
-		   CurrentRegister=CurrentRegister&FIRTS_10_BITS;
-		   PTB-> PCOR |= RegisterUp(CurrentRegister);
-           while((PTC->PDIR & (1<<PTC12)) && counter>=50)
+       while((PTC->PDIR & (1<<PTC12)) && counter>=50)
+
 		      		   {
 		      		   	   PTD->PTOR |=(1<<16);
 		      		   	   LPIT0_Ch0_IRQHandler(10);
@@ -161,13 +173,13 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 		      			 if ((counter>=10) && (counter%400 ==0))
 		      			 {
 //		      				 PTD->PCOR |=(1<<15);
-		      				 UP_one();
+		      				 UpMovement();
 		      			 }
 
 		      		   }
 					   if((counter<50) && (counter>1))
 					   {
-						   UP_one();
+						   UpMovement();
 					   }
 
 
@@ -175,21 +187,22 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 	   }
 	   else
 	   {
-		   while((PTC->PDIR & (1<<PTC13)) && counter>=50)
+        PORTC->PCR[13] |= (1 << 24);
+        while((PTC->PDIR & (1<<PTC13)) && counter>=50)
 			   {
 			   LPIT0_Ch0_IRQHandler(10);
 			   counter++;
 			   if ((counter>=10) && (counter%400 ==0))
 			   		      			 {
 			   //		      				 PTD->PCOR |=(1<<15);
-			   		      				 DOWN_one();
+			   		      				 DownMovement();
 			   		      			 }
 			   }
 		   	   if ((counter<50) && (counter>1))
 		   	   {
 		   		   while(CurrentRegister>0 )
 		   		   {
-		   			   DOWN_one();
+		   			   DownMovement();
 		   		   }
 		   	   }
 
@@ -219,14 +232,14 @@ int main(void)
 
     /*PTB6 and PTB7 are not used because they're reserved for external oscillator*/
     PTB->PDDR |= OUTPUT_LEDS;
-    for(ItaratorPinsB=0;ItaratorPinsB<=5;ItaratorPinsB++)
+    for(IteratorPinsB=0;IteratorPinsB<=5;IteratorPinsB++)
     {
-    	PORTB->PCR[ItaratorPinsB] = GPIO_ACTIVE;
+    	PORTB->PCR[IteratorPinsB] = GPIO_ACTIVE;
     }
 
-    for(ItaratorPinsB=8;ItaratorPinsB<=11;ItaratorPinsB++)
+    for(IteratorPinsB=8;IteratorPinsB<=11;IteratorPinsB++)
     {
-    	PORTB->PCR[ItaratorPinsB] = GPIO_ACTIVE;
+    	PORTB->PCR[IteratorPinsB] = GPIO_ACTIVE;
     }
 
     PTD->PDDR |= 1<<PTD0;
