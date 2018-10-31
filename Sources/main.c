@@ -88,13 +88,13 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 }
 
 
-  void LPIT0_Ch0_IRQHandler (void)
+  void LPIT0_Ch0_IRQHandler (__IO uint32_t MILIS)
       {
       	PCC->PCCn[PCC_LPIT_INDEX] = PCC_PCCn_PCS(6); /*Clock Src = 6 (SPLL2_DIV_CLK)*/
       	PCC->PCCn[PCC_LPIT_INDEX] |=PCC_PCCn_CGC_MASK;
       	LPIT0->MCR=0x00000001;
       	LPIT0->MIER =0x0000001;
-      	LPIT0->TMR[0].TVAL = 10*40000; /*Chan 0 Timeout period: 40 M clocks*/
+      	LPIT0->TMR[0].TVAL = MILIS*40000; /*Chan 0 Timeout period: 40 M clocks*/
       	LPIT0->TMR[0].TCTRL = 0x00000001; /*T_EN=1  : Timer channel is enabled*/
       	while(0 == (LPIT0->MSR & LPIT_MSR_TIF0_MASK));
       	LPIT0->MSR |= LPIT_MSR_TIF0_MASK;
@@ -152,26 +152,47 @@ unsigned int RegisterDown(unsigned int CurrentRegisterDown)
 		   CurrentRegister=(CurrentRegister<<1)+1;
 		   CurrentRegister=CurrentRegister&FIRTS_10_BITS;
 		   PTB-> PCOR |= RegisterUp(CurrentRegister);
-        while(PTC->PDIR & (1<<PTC12))
+           while((PTC->PDIR & (1<<PTC12)) && counter>=50)
 		      		   {
 		      		   	   PTD->PTOR |=(1<<16);
-		      		   	   LPIT0_Ch0_IRQHandler();
+		      		   	   LPIT0_Ch0_IRQHandler(10);
 		      			   PTD->PTOR |=(1<<16);
 		      			   counter++;
-		      			 if (counter>=50)
+		      			 if ((counter>=10) && (counter%400 ==0))
 		      			 {
-		      				 PTD->PCOR |=(1<<15);
+//		      				 PTD->PCOR |=(1<<15);
+		      				 UP_one();
 		      			 }
 
-		      		   }PTD->PSOR |= (1<<PTD15);
+		      		   }
+					   if((counter<50) && (counter>1))
+					   {
+						   UP_one();
+					   }
+
 
 
 	   }
 	   else
 	   {
-		   PORTC->PCR[13] |= (1 << 24);
-		   CurrentRegister=CurrentRegister>>1;
-		   PTB-> PSOR = ~RegisterDown(CurrentRegister);
+		   while((PTC->PDIR & (1<<PTC13)) && counter>=50)
+			   {
+			   LPIT0_Ch0_IRQHandler(10);
+			   counter++;
+			   if ((counter>=10) && (counter%400 ==0))
+			   		      			 {
+			   //		      				 PTD->PCOR |=(1<<15);
+			   		      				 DOWN_one();
+			   		      			 }
+			   }
+		   	   if ((counter<50) && (counter>1))
+		   	   {
+		   		   while(CurrentRegister>0 )
+		   		   {
+		   			   DOWN_one();
+		   		   }
+		   	   }
+
 	   }
 
 
