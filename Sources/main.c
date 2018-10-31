@@ -179,7 +179,7 @@ void DownMovement(void)
 		      		   }
 					   if((counter<50) && (counter>1))
 					   {
-						   while(CurrentRegister<0x3FF)
+						   while((CurrentRegister<0x3FF) && (PORTC->ISFR ==0 ))
 						   {
 							   PTD->PTOR |=(1<<16);
 							   LPIT0_Ch0_IRQHandler(10);
@@ -211,7 +211,7 @@ void DownMovement(void)
 			   }
         if((counter<50) && (counter>1))
         					   {
-        						   while((CurrentRegister>0))
+        						   while((CurrentRegister>0) && (PORTC->ISFR ==0 ))
         						   {
         							   PTD->PTOR |=(1<<0);
         							   LPIT0_Ch0_IRQHandler(10);
