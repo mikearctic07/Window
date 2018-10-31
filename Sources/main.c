@@ -35,9 +35,14 @@
 #define PTD16 16
 #define PTC12 12
 #define PTC13 13
+#define OUTPUT_LEDS 0xF3F
+#define FIRST_5_BITS 0x3F
+#define FIRTS_10_BITS 0x3FF
+#define GPIO_ACTIVE 0x00000100
 
-
-
+__IO uint32_t InterruptRegister;
+__IO uint32_t CurrentRegister;
+__IO uint32_t ItaratorPinsB;
 
 /*!
   \brief The main function for the project.
@@ -45,6 +50,44 @@
  * - startup asm routine
  * - main()
 */
+
+unsigned int RegisterUp(unsigned int CurrentRegisterUp);
+unsigned int RegisterDown(unsigned int CurrentRegisterDown);
+
+unsigned int RegisterUp(unsigned int CurrentRegisterUp)
+{
+    unsigned int RealBits;
+    /*In order to not use PB6 and PB7*/
+    if(CurrentRegisterUp>FIRST_5_BITS)
+    {
+    	RealBits=(CurrentRegisterUp<<2)+3;
+    	RealBits=RealBits&OUTPUT_LEDS;
+    }
+    else
+    {
+    	RealBits=CurrentRegisterUp;
+    }
+
+    return RealBits;
+}
+
+unsigned int RegisterDown(unsigned int CurrentRegisterDown)
+{
+    unsigned int RealBits;
+    if(CurrentRegisterDown>FIRST_5_BITS)
+    {
+    	RealBits=(CurrentRegisterDown<<2)+3;
+    	RealBits=RealBits&OUTPUT_LEDS;
+    }
+    else
+    {
+    	RealBits=CurrentRegisterDown;
+    }
+
+    return RealBits;
+}
+
+
   void LPIT0_Ch0_IRQHandler (void)
       {
       	PCC->PCCn[PCC_LPIT_INDEX] = PCC_PCCn_PCS(6); /*Clock Src = 6 (SPLL2_DIV_CLK)*/
@@ -57,6 +100,7 @@
       	LPIT0->MSR |= LPIT_MSR_TIF0_MASK;
       	LPIT0->TMR[0].TCTRL = 0x00000000;
       }
+
   void SOSC_init_8MHz(void)
   {
   	 SCG->SOSCDIV=0x00000101; /* SOSCDIV1 & SOSCDIV2 =1: divide by 1 */
@@ -99,14 +143,17 @@
 
   void PORTC_IRQHandler(void)
   {
-	  __IO uint32_t counter=0;
-	  __IO uint32_t Register;
-	   Register=PORTC->ISFR;
-	   if(Register==0x00001000)
+    __IO uint32_t counter=0;
+    
+	  InterruptRegister=PORTC->ISFR;
+	   if(InterruptRegister==0x00001000)
 	   {
-		   while(PTC->PDIR & (1<<PTC12))
+		   PORTC->PCR[12] |= (1 << 24);
+		   CurrentRegister=(CurrentRegister<<1)+1;
+		   CurrentRegister=CurrentRegister&FIRTS_10_BITS;
+		   PTB-> PCOR |= RegisterUp(CurrentRegister);
+        while(PTC->PDIR & (1<<PTC12))
 		      		   {
-		      		   	   PORTC->PCR[12] |=(1<<24);
 		      		   	   PTD->PTOR |=(1<<16);
 		      		   	   LPIT0_Ch0_IRQHandler();
 		      			   PTD->PTOR |=(1<<16);
@@ -118,11 +165,13 @@
 
 		      		   }PTD->PSOR |= (1<<PTD15);
 
+
 	   }
 	   else
 	   {
 		   PORTC->PCR[13] |= (1 << 24);
-		   PTD->PTOR |=(1<<16);
+		   CurrentRegister=CurrentRegister>>1;
+		   PTB-> PSOR = ~RegisterDown(CurrentRegister);
 	   }
 
 
@@ -139,6 +188,7 @@ int main(void)
   /* Write your code here */
     PCC-> PCCn[PCC_PORTC_INDEX] = PCC_PCCn_CGC_MASK; /*Enable clock to PORT C*/
     PCC-> PCCn[PCC_PORTD_INDEX] = PCC_PCCn_CGC_MASK;/*Enable clock to PORT D*/
+    PCC-> PCCn[PCC_PORTB_INDEX] = PCC_PCCn_CGC_MASK;/*Enable clock to PORT B*/
 
     PTC->PDDR &= ~(1<<PTC12);
     PORTC->PCR[12] = 0x00098110;
@@ -146,37 +196,34 @@ int main(void)
     PTC->PDDR &= ~(1<<PTC13);
     PORTC->PCR[13] = 0x00098110;
 
+    /*PTB6 and PTB7 are not used because they're reserved for external oscillator*/
+    PTB->PDDR |= OUTPUT_LEDS;
+    for(ItaratorPinsB=0;ItaratorPinsB<=5;ItaratorPinsB++)
+    {
+    	PORTB->PCR[ItaratorPinsB] = GPIO_ACTIVE;
+    }
+
+    for(ItaratorPinsB=8;ItaratorPinsB<=11;ItaratorPinsB++)
+    {
+    	PORTB->PCR[ItaratorPinsB] = GPIO_ACTIVE;
+    }
+
     PTD->PDDR |= 1<<PTD0;
-    PORTD->PCR[0] = 0x00000100;
+    PORTD->PCR[0] = GPIO_ACTIVE;
 
     PTD->PDDR |= 1<<PTD15;
-    PORTD->PCR[15] = 0x00000100;
+    PORTD->PCR[15] = GPIO_ACTIVE;
 
     PTD->PDDR |= 1<<PTD16;
-    PORTD->PCR[16] = 0x00000100;
+    PORTD->PCR[16] = GPIO_ACTIVE;
 
     SOSC_init_8MHz();
     SPLL_init_160MHz();
     clock_setup_80MHz();
     WDOG_disable();
     PINS_DRV_SetPins(PTD,(1<<0|1<<15|1<<16));
+    PTB-> PSOR |= OUTPUT_LEDS;
     INT_SYS_EnableIRQ(PORTC_IRQn);
-
-
-//  For example:
-//  for(;;) {
-//	  if(PTC->PDIR & (1<<PTC12))
-//	  {
-//		PTD-> PCOR |= 1<<PTD0;
-//
-//	  }
-//	  else
-//	  {
-//		  PTD-> PSOR |= 1<<PTD0;
-//
-//	  }
-//
-//  	  	  }
 
   /*** Don't write any code pass this line, or it will be deleted during code generation. ***/
   /*** RTOS startup code. Macro PEX_RTOS_START is defined by the RTOS component. DON'T MODIFY THIS CODE!!! ***/
