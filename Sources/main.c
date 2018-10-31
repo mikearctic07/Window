@@ -104,15 +104,19 @@
 	   Register=PORTC->ISFR;
 	   if(Register==0x00001000)
 	   {
-		   while(PTC->PDIR & (1<<PTC12) && counter<=50 )
+		   while(PTC->PDIR & (1<<PTC12))
 		      		   {
 		      		   	   PORTC->PCR[12] |=(1<<24);
 		      		   	   PTD->PTOR |=(1<<16);
 		      		   	   LPIT0_Ch0_IRQHandler();
 		      			   PTD->PTOR |=(1<<16);
 		      			   counter++;
-		      		   }
-		      		   if (counter>=50)PTD->PCOR |=(1<<15);
+		      			 if (counter>=50)
+		      			 {
+		      				 PTD->PCOR |=(1<<15);
+		      			 }
+
+		      		   }PTD->PSOR |= (1<<PTD15);
 
 	   }
 	   else
