@@ -35,7 +35,7 @@
 #define PTD16 16
 #define PTC12 12
 #define PTC13 13
-#define PTA12 12
+#define PTC8 8
 #define OUTPUT_LEDS 0xF3F
 #define FIRST_5_BITS 0x3F
 #define FIRST_10_BITS 0x3FF
@@ -44,6 +44,7 @@
 __IO uint32_t InterruptRegister;
 __IO uint32_t CurrentRegister;
 __IO uint32_t IteratorPinsB;
+__IO uint32_t AntiPinch;
 
 /*!
   \brief The main function for the project.
@@ -186,19 +187,30 @@ void DownTransition(__IO uint32_t counter)
 void PORTC_IRQHandler(void)
 {
     __IO uint32_t counter=0;
-    
+    //AntiPinch=0;
 	  InterruptRegister=PORTC->ISFR;
-	   if(InterruptRegister==0x00001000)
+	  if(InterruptRegister == 0x100)
+	  	   {
+	  		   while((CurrentRegister>0))
+	  		   	{
+	  		   		DownTransition(counter);
+	  		   		counter++;
+	  		   	}
+	  		    LPIT0_Ch0_IRQHandler (5000);
+	  		   	PORTC->PCR[8] |= (1<<24);
+	  	   }
+	  else if(InterruptRegister==0x00001000)
 	   {
 		   PORTC->PCR[12] |= (1 << 24);
-		   while((PTC->PDIR & (1<<PTC12)))
+		   while((PTC->PDIR & (1<<PTC12)) && (PORTC->ISFR ==0 ))
 		   {
 			   UpTransition(counter);
 			   counter++;
+
 		   }
 		   if((counter<50) && (counter>1))
 		   {
-			   while((CurrentRegister<0x3FF) && (PORTC->ISFR ==0 ))
+			   while((CurrentRegister<0x3FF) && (PORTC->ISFR ==0 ) && (PORTA->ISFR ==0 ))
 			   {
 				   UpTransition(counter);
 				   counter++;
@@ -225,13 +237,37 @@ void PORTC_IRQHandler(void)
 
 	   }
 
+
   }
 /*---------FUNCION PORTA_IRQHandler-----INTERRUPCION PUSH BUTTON PUERTO A (ANTIPINCH)*/
 void PORTA_IRQHandler(void)
 {
+	__IO uint32_t counter=0;
+	AntiPinch=1;
+
+	while((CurrentRegister>0))
+	{
+		DownTransition(counter);
+		counter++;
+	}
 	PORTA->PCR[12] |= (1<<24);
-	PTD->PTOR |= (1<<PTD15);
+//	LPIT0_Ch0_IRQHandler (5000);
+
+//PTD->PTOR |= (1<<PTD0);
+//AntiPinch=0;
 }
+//void init_NVIC(void)
+//{
+//    // RTC_Interrupt (alarm)
+//    S32_NVIC->ICPR[1] = (1 << (59 % 32));
+//    S32_NVIC->ISER[1] = (1 << (59 % 32));
+//    S32_NVIC->IP[59] = 0x00;  // Priority level 0
+//
+//    // PORTC_interrupt
+//    S32_NVIC->ICPR[1] = (1 << (61 % 32));
+//    S32_NVIC->ISER[1] = (1 << (61 % 32));
+//    S32_NVIC->IP[61] = 0x10;  // Priority level 1
+//}
 int main(void)
 {
   /* Write your local variable definition here */
@@ -274,8 +310,8 @@ int main(void)
     PTD->PDDR |= 1<<PTD16;
     PORTD->PCR[16] = GPIO_ACTIVE;
 
-    PTA->PDDR &= ~(1<<PTA12); /*PUSHBUTTON ON PORT A USED FOR ANTIPINCH FUNCTION*/
-    PORTA->PCR[12] = 0x00090112;
+    PTC->PDDR &= ~(1<<PTC8); /*PUSHBUTTON ON PORT A USED FOR ANTIPINCH FUNCTION*/
+    PORTC->PCR[8] = 0x00090112;
 
 
 
@@ -288,6 +324,7 @@ int main(void)
     PTB-> PSOR |= OUTPUT_LEDS;
     INT_SYS_EnableIRQ(PORTC_IRQn);
     INT_SYS_EnableIRQ(PORTA_IRQn);
+//    init_NVIC();
 
 //    for(;;)
 //    {
