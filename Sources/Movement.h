@@ -21,11 +21,11 @@
 #ifndef MOVEMENT_H_
 #define MOVEMENT_H_
 
-void RegisterUp(__IO uint32_t);
-void RegisterDown(__IO uint32_t);
-void UpMovement(void);
-void DownMovement(void);
-void UpTransition(__IO uint32_t);
-void DownTransition(__IO uint32_t);
+
+uint32_t MOVEMENT_Breaking_Bits(uint32_t currentLedStateBreaking);
+void MOVEMENT_Up_Movement(void);
+void MOVEMENT_Down_Movement(void);
+void MOVEMENT_Up_Transition(uint32_t counter);
+void MOVEMENT_Down_Transition(uint32_t counter);
 
 #endif /* MOVEMENT_H_ */

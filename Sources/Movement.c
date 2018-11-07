@@ -1,8 +1,8 @@
 /*
- * functions.c
+ * Movement.c
  *
  *  Created on: 1 nov. 2018
- *      Author: migue
+ *      Author: alex
  */
 
 /* ******************************************************************************
@@ -10,54 +10,30 @@
 ****************************************************************************** */
 #include "Movement.h"
 
-__IO uint32_t InterruptRegister;
-__IO uint32_t CurrentRegister;
-__IO uint32_t AntiPinch;
-
-/*******************************************************************************
-Function: RegisterUp
-Notes   : Checks if the current register has to be updated (if one bit has to be set for Up Movement)
-        :
-        :
-*******************************************************************************/
-void RegisterUp(__IO uint32_t CurrentRegisterUp)
-{
-    __IO uint32_t RealBits;               /*this variable will store new value for the LED bar*/
-                                          /*In order to not use PB6 and PB7*/
-    if(CurrentRegisterUp>FIRST_5_BITS)    /*Checks if bit 6 or higher has to be set, shifts 2 bits and add 3 in order to use only*/
-    {								      /*bits [0-5] and [8-11] */
-    	RealBits=(CurrentRegisterUp<<2)+3;
-    	RealBits=RealBits&OUTPUT_LEDS;
-    }
-    else
-    {
-    	RealBits=CurrentRegisterUp;       /*if bit 6 must not be set yet, the current register remains the same*/
-    }
-
-    PTB-> PCOR |= RealBits;               /*Clear LED's on Current register (LEDS on)*/
-}
+volatile uint32_t currentLedState;
+static uint32_t updatedLedState;
 
 /*******************************************************************************
 Function:
-Notes   : Checks if the current register has to be updated (if one bit has to be cleared for Down Movement)
+Notes   : Checks if the current register has to be updated
         :
         :
 *******************************************************************************/
-void RegisterDown(__IO uint32_t CurrentRegisterDown)
+uint32_t MOVEMENT_Breaking_Bits(uint32_t currentLedStateBreaking)
 {
-	__IO uint32_t RealBits;
-	if(CurrentRegisterDown>FIRST_5_BITS)       /*Checks if bit 6 or higher has to be clear, shifts-left 2 bits and add 3 in order to use only*/
-		{								       /*bits [0-5] and [8-11] */
-			RealBits=(CurrentRegisterDown<<2)+3;
-			RealBits=RealBits&OUTPUT_LEDS;
-		}
-	else
-		{
-			RealBits=CurrentRegisterDown;      /*if bit 6 must not be cleared yet, the current register remains the same*/
-		}
-
-	PTB-> PSOR = ~RealBits;                    /*Set LEDs on Current register (LEDS OFF)*/
+    uint32_t outputLeds;
+    if(currentLedStateBreaking>FIRST_5_BITS) /*Checks if bit 6 or higher has to be clear, shifts-left 2 bits and add 3 in order to use only*/
+        {                                      /*bits [0-5] and [8-11] */
+            outputLeds=(currentLedStateBreaking<<2)+3;
+            outputLeds=outputLeds&OUTPUT_LEDS;
+        }
+    else
+        {
+            outputLeds=currentLedStateBreaking;      /*if bit 6 must not be cleared yet, the current register remains the same*/
+        }
+    return outputLeds;
 }
+
 
 /*******************************************************************************
 Function: UpMovement
@@ -65,11 +41,12 @@ Notes   : Generates the current register of LED bar if one bit has to be increme
         :
         :
 *******************************************************************************/
-void UpMovement(void)
+void MOVEMENT_Up_Movement(void)
 {
-	CurrentRegister=(CurrentRegister<<1)+1;        /*adds the next bit to be turned on*/
-	CurrentRegister=CurrentRegister&FIRST_10_BITS; /*Current register is prepared with the MASK*/
-	RegisterUp(CurrentRegister);                   /*New current register is created while avoiding bits [0-5] and [8-11] */
+	currentLedState=(currentLedState<<1)+1;        /*adds the next bit to be turned on*/
+	currentLedState=currentLedState&FIRST_10_BITS; /*Current Led State is prepared with the MASK*/
+	updatedLedState=MOVEMENT_Breaking_Bits(currentLedState);
+    PTB-> PCOR |= updatedLedState; /*Turn On Leds*/
 }
 
 
@@ -79,10 +56,11 @@ Notes   : Generates the current register of LED bar if one bit has to be decreme
         :
         :
 *******************************************************************************/
-void DownMovement(void)
+void MOVEMENT_Down_Movement(void)
 {
-	CurrentRegister=CurrentRegister>>1;            /*takes the next bit to be turned off*/
-	RegisterDown(CurrentRegister);                 /*New current register is created while avoiding bits [0-5] and [8-11] */
+	currentLedState=currentLedState>>1;            /*takes the next bit to be turned off*/
+	updatedLedState=MOVEMENT_Breaking_Bits(currentLedState);
+    PTB-> PSOR = ~updatedLedState; /*Turn Off Leds*/
 }
 
 /*******************************************************************************
@@ -91,7 +69,7 @@ Notes   : Generates  a valid "Up" transition (more than 10 mS and increments eve
         :
         :
 *******************************************************************************/
-void UpTransition(__IO uint32_t counter)
+void MOVEMENT_Up_Transition(uint32_t counter)
 {
 	PTD->PTOR |=(1<<16);      /*Toggles Green LED while the LED bar increments*/
     LPIT0_Ch0_IRQHandler(10);  /*LPIT0 timer is initialized with timeout = 10ms*/
@@ -99,11 +77,9 @@ void UpTransition(__IO uint32_t counter)
 
     if ((counter>=1) && (counter%40 ==0)) /* if 40 X 10ms = 400ms, checks for valid time and increments one led every 400ms*/
     {
- 	   UpMovement();
+ 	   MOVEMENT_Up_Movement();
     }
 }
-
-
 
 /*******************************************************************************
 Function: DownTransition
@@ -111,8 +87,7 @@ Notes   : Generates  a valid "Down" transition (more than 10 mS and increments e
         :
         :
 *******************************************************************************/
-void 
-DownTransition(__IO uint32_t counter)
+void MOVEMENT_Down_Transition(uint32_t counter)
 {
 	PTD->PTOR |=(1<<0);        /*Toggles Blue LED while the LED bar increments*/
     LPIT0_Ch0_IRQHandler(10);  /*LPIT0 timer is initialized with timeout = 10ms*/
@@ -120,7 +95,7 @@ DownTransition(__IO uint32_t counter)
 
     if ((counter>=1) && (counter%40 ==0)) /* if 40 X 10ms = 400ms, checks for valid time and decrements one led every 400ms*/
     {
- 	   DownMovement();
+ 	   MOVEMENT_Down_Movement();
     }
 }
 
