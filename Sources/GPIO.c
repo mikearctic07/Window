@@ -4,10 +4,8 @@
  *  Created on: 1 nov. 2018
  *      Author: migue
  */
-/*
-/* ******************************************************************************
- * Includes
-****************************************************************************** */
+
+
 #include "S32K144.h" /* include peripheral declarations S32K144 */
 #include "s32_core_cm4.h"
 #include "GPIO.h"
@@ -26,36 +24,43 @@ void GPIO_Init(void)
     PCC-> PCCn[PCC_PORTA_INDEX] = PCC_PCCn_CGC_MASK; /*Enable clock to PORT A*/
 
     PTC->PDDR &= ~(1<<PTC12);     /*Port C12: Data Direction = input (default) */
-    PORTC->PCR[12] = GPIO_ISF_RISING_EDGE_MASK;  /*Port C12: MUX=GPIO, ISF flag on rising-edge*/
+    PORTC->PCR[PTC12] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
+					 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN);  /*Port C12: MUX=GPIO, ISF flag on rising-edge*/
 
     PTC->PDDR &= ~(1<<PTC13);     /*Port C12: Data Direction = input */
-    PORTC->PCR[13] = GPIO_ISF_RISING_EDGE_MASK;  /*Port C13: MUX=GPIO, ISF flag on rising-edge*/
+    PORTC->PCR[PTC13] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
+    				 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN);  /*Port C13: MUX=GPIO, ISF flag on rising-edge*/
 
     /*PTB6 and PTB7 are not used because they're reserved for external oscillator*/
     PTB->PDDR |= OUTPUT_LEDS; /*Port D: Mask of bits configured as outputs*/
 
-    PORTB->PCR[0] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[1] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[2] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[3] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[4] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[5] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB0] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB1] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB2] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB3] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB4] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB5] = GPIO_ACTIVE_MASK; /*Port B pins 0 to 5, MUX = GPIO*/
 
-    PORTB->PCR[8] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[9] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[10] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
-    PORTB->PCR[11] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB8] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB9] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB10] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
+    PORTB->PCR[PTB11] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
 
 
     PTD->PDDR |= 1<<PTD0;        /*Port D0: Data Direction= output*/
-    PORTD->PCR[0] = GPIO_ACTIVE_MASK; /*Port D0: MUX = GPIO*/
+    PORTD->PCR[PTD0] = GPIO_ACTIVE_MASK; /*Port D0: MUX = GPIO*/
 
     PTD->PDDR |= 1<<PTD15;       /*Port D15: Data Direction= output*/
-    PORTD->PCR[15] = GPIO_ACTIVE_MASK;/*Port D15: MUX = GPIO*/
+    PORTD->PCR[PTD15] = GPIO_ACTIVE_MASK;/*Port D15: MUX = GPIO*/
 
     PTD->PDDR |= 1<<PTD16;       /*Port D16: Data Direction= output*/
-    PORTD->PCR[16] = GPIO_ACTIVE_MASK;/*Port D16: MUX = GPIO*/
+    PORTD->PCR[PTD16] = GPIO_ACTIVE_MASK;/*Port D16: MUX = GPIO*/
 
     PTC->PDDR &= ~(1<<PTC8);     /*Port C8: Data Direction = input*/
-    PORTC->PCR[8] = GPIO_ISF_RISING_EDGE_MASK;  /*Port C8: MUX= GPIO, ISF on rising edge*/
+    PORTC->PCR[PTC8] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
+    				|GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN
+					|GPIO_INPUT_PULLDOWN_R_EN);  /*Port C8: MUX= GPIO, ISF on rising edge*/
+
+    PTD-> PSOR |= (1<<PTD0|1<<PTD15|1<<PTD16);  /*Set the LEDS RED, BLUE off */
+    PTB-> PSOR |= OUTPUT_LEDS; 		/*Set the Red Led Bar pins off */
 }

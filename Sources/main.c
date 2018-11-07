@@ -42,8 +42,6 @@ int main(void)
 
     CLOCKS_Init();
     GPIO_Init();  			/*Initialize the GPIO pins---Inputs---Outputs----Interrupt Buttons---*/
-    PINS_DRV_SetPins(PTD,(1<<0|1<<15|1<<16)); /*Set LEDs: BLUE, RED and GREEN (LEDS OFF)*/
-    PTB-> PSOR |= OUTPUT_LEDS; 		/*Set the Red Led Bar pins off */
     INT_SYS_EnableIRQ(PORTC_IRQn);  /*Enable desired interrupts on PORT C*/
     INT_SYS_EnableIRQ(PORTA_IRQn);  /*Enable desired interrupts on PORT A*/
 
