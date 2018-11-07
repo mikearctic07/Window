@@ -1,5 +1,3 @@
-#include "S32K144.h" /* include peripheral declarations S32K144 */
-#include "s32_core_cm4.h"
 #include "Clocks.h"
 
 /*******************************************************************************

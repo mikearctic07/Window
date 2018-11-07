@@ -8,20 +8,9 @@
 /* ******************************************************************************
  * Includes
 ****************************************************************************** */
-#include "S32K144.h" /* include peripheral declarations S32K144 */
-#include "s32_core_cm4.h"
+
 #include "GPIO.h"
 
-#define PTD0 0
-#define PTD15 15
-#define PTD16 16
-#define PTC12 12
-#define PTC13 13
-#define PTC8 8
-#define OUTPUT_LEDS 0xF3F
-#define FIRST_5_BITS 0x3F
-#define FIRST_10_BITS 0x3FF
-#define GPIO_ACTIVE 0x00000100
 __IO uint32_t IteratorPinsB;
 
 /*******************************************************************************

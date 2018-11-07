@@ -1,19 +1,25 @@
 /*
- * ButtonsLogic.h
+ * Movement.h
  *
  *  Created on:  6 nov. 2018
  *      Author: migue
  */
 /********************************************************************************
-* File:             ButtonsLogic.h
+* File:             Movement.h
 * Owner:            Eduardo Cruz, Jorge Peña, Miguel Sanchez
 * Version:          1.1
 * Date:             Nov-06-2018
 * Classification:   Window Lifter Information
 * Brief:            Implement Algorithm to up and down.
 ********************************************************************************/
-#ifndef HEADER_H_
-#define HEADER_H_
+
+#include "S32K144.h" /* include peripheral declarations S32K144 */
+#include "s32_core_cm4.h"
+#include "Definitions.h"
+#include "Clocks.h"
+
+#ifndef MOVEMENT_H_
+#define MOVEMENT_H_
 
 void RegisterUp(__IO uint32_t);
 void RegisterDown(__IO uint32_t);
@@ -22,4 +28,4 @@ void DownMovement(void);
 void UpTransition(__IO uint32_t);
 void DownTransition(__IO uint32_t);
 
-#endif /* HEADER_H_ */
+#endif /* MOVEMENT_H_ */

@@ -24,13 +24,7 @@
 
 
 /* Including necessary module. Cpu.h contains other modules needed for compiling.*/
-#include "Cpu.h"
-#include "S32k144.h"
-#include "Clocks.h"
-#include "GPIO.h"
-#include "Interruptions.h"
-#include "Movement.h"
-#include "Definitions.h"
+#include "Modules.h"
 
 volatile int exit_code = 0;
 

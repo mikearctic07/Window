@@ -13,8 +13,15 @@
 * Brief:            Clock Functions
 ********************************************************************************/
 
+#include "S32K144.h" 
+#include "s32_core_cm4.h"
+
+#ifndef CLOCKS_H_
+#define CLOCKS_H_
 
 void SOSC_init_8MHz(void);
 void SPLL_init_160MHz(void);
 void clock_setup_80MHz(void);
 void WDOG_disable (void);
+
+#endif /* CLOCKS_H_ */
