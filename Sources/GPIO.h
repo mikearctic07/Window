@@ -20,6 +20,6 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
-void init_GPIO(void);
+void GPIO_Init(void);
 
 #endif /* GPIO */

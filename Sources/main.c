@@ -44,7 +44,7 @@ int main(void)
     SPLL_init_160MHz();  	/*Initialize SPLL to 160 MHz with 8 MHz SOSC*/
     clock_setup_80MHz(); 	/*Initialize clocks: 80MHz sysclk & core, 40MHz bus, 20MHz flash*/
     WDOG_disable();  		/*Disables the watch dog timer*/
-    init_GPIO();  			/*Initialize the GPIO pins---Inputs---Outputs----Interrupt Buttons---*/
+    GPIO_Init();  			/*Initialize the GPIO pins---Inputs---Outputs----Interrupt Buttons---*/
     PINS_DRV_SetPins(PTD,(1<<0|1<<15|1<<16)); /*Set LEDs: BLUE, RED and GREEN (LEDS OFF)*/
     PTB-> PSOR |= OUTPUT_LEDS; 		/*Set the Red Led Bar pins off */
     INT_SYS_EnableIRQ(PORTC_IRQn);  /*Enable desired interrupts on PORT C*/
