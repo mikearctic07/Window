@@ -2,6 +2,7 @@ Sources/main.o: ../Sources/main.c \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/lib_c99.prefix \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/common.prefix \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/ewl_c_version.h \
+ ../Sources/Modules.h \
  C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/Cpu.h \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/device_registers.h \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/common/s32_core_cm4.h \
@@ -32,13 +33,20 @@ Sources/main.o: ../Sources/main.c \
  C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/ewl_rsize_t.h \
  C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/clockMan1.h \
  C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/Cpu.h \
- C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/include/S32k144.h
+ C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/include/S32k144.h \
+ ../Sources/Clocks.h \
+ C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/include/S32K144.h \
+ C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/common/s32_core_cm4.h \
+ ../Sources/Definitions.h ../Sources/GPIO.h ../Sources/Interruptions.h \
+ ../Sources/Movement.h
 
 C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/lib_c99.prefix:
 
 C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/common.prefix:
 
 C:/NXP2/S32DS_ARM_v2018.R1/S32DS/arm_ewl2/EWL_C/include/ewl_c_version.h:
+
+../Sources/Modules.h:
 
 C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/Cpu.h:
 
@@ -101,3 +109,17 @@ C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/clockMan1.h:
 C:/Users/migue/workspaceS32DS.ARM.2018.R1/Practica/Generated_Code/Cpu.h:
 
 C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/include/S32k144.h:
+
+../Sources/Clocks.h:
+
+C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/S32K144/include/S32K144.h:
+
+C:/NXP2/S32DS_ARM_v2018.R1/S32DS/S32SDK_S32K14x_EAR_0.8.6/platform/devices/common/s32_core_cm4.h:
+
+../Sources/Definitions.h:
+
+../Sources/GPIO.h:
+
+../Sources/Interruptions.h:
+
+../Sources/Movement.h:
