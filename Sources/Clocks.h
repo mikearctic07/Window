@@ -20,9 +20,10 @@
 #ifndef CLOCKS_H_
 #define CLOCKS_H_
 
-void SOSC_init_8MHz(void);
-void SPLL_init_160MHz(void);
-void clock_setup_80MHz(void);
-void WDOG_disable (void);
+void CLOCKS_SOSC_init_8MHz(void);
+void CLOCKS_SPLL_init_160MHz(void);
+void CLOCKS_clock_setup_80MHz(void);
+void CLOCKS_WDOG_disable (void);
+void CLOCKS_Init(void);
 
 #endif /* CLOCKS_H_ */

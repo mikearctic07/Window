@@ -3,10 +3,8 @@
 /*******************************************************************************
 Function: SOSC_init_8MHz
 Notes   : Set up the 8MHz clk
-        :
-        :
 *******************************************************************************/
-void SOSC_init_8MHz(void)
+void CLOCKS_SOSC_init_8MHz(void)
 {
  SCG->SOSCDIV=SOSCDIV1_SOSCDIV2_DIV1;  /* SOSCDIV1 & SOSCDIV2 =1: divide by 1 */
  SCG->SOSCCFG=SOSC_RANGE_1MHZ_8MHZ; /* Range=2: Medium freq (SOSC between 1MHz-8MHz)*/
@@ -14,15 +12,12 @@ void SOSC_init_8MHz(void)
  SCG->SOSCCSR=SOSCCSR_REGISTER_EN;
  while(!(SCG->SOSCCSR & SCG_SOSCCSR_SOSCVLD_MASK)); /* Wait for sys OSC clk valid */
 }
+
 /*******************************************************************************
 Function: SPLL_init_160MHz
 Notes   : Set up the 160MHz clk
-        :
-        :
 *******************************************************************************/
-
-
-void SPLL_init_160MHz(void)
+void CLOCKS_SPLL_init_160MHz(void)
 {
  while(SCG->SPLLCSR & SCG_SPLLCSR_LK_MASK); /* Ensure SPLLCSR unlocked */
  SCG->SPLLCSR = SPLL_DISABLED; /* SPLLEN=0: SPLL is disabled (default) */
@@ -31,17 +26,14 @@ void SPLL_init_160MHz(void)
  while(SCG->SPLLCSR & SCG_SPLLCSR_LK_MASK); /* Ensure SPLLCSR unlocked */
  SCG->SPLLCSR = SPLLCSR_CAN_BE_WRITTEN_NO_LK; /* LK=0: SPLLCSR can be written */
  while(!(SCG->SPLLCSR & SCG_SPLLCSR_SPLLVLD_MASK)); /* Wait for SPLL valid */
-
 }
 
 
 /*******************************************************************************
 Function: clock_setup_80MHz
 Notes   : Set up the 80MHz clock
-        :
-        :
 *******************************************************************************/
-void clock_setup_80MHz(void) /* Change to normal RUN mode with 8MHz SOSC, 80 MHz PLL*/
+void CLOCKS_Clock_Setup_80MHz(void) /* Change to normal RUN mode with 8MHz SOSC, 80 MHz PLL*/
 {
 
  SCG->RCCR=SCG_RCCR_SCS(SPLL_AS_CLKSOURCE) /* PLL as clock source*/
@@ -55,12 +47,22 @@ void clock_setup_80MHz(void) /* Change to normal RUN mode with 8MHz SOSC, 80 MHz
 /*******************************************************************************
 Function: WDOG_disable
 Notes   : Function to disable the watch dog timer
-        :
-        :
 *******************************************************************************/
-void WDOG_disable (void)
+void CLOCKS_WDOG_disable (void)
   {
     WDOG->CNT=WATCH_DOG_COUNTER_MASK; /*Unlock Watchdog*/
     WDOG->TOVAL=WD_TIMEOUT_MAX; /*Maximum timeout value*/
     WDOG->CS = WD_DISABLE_WATCHDOG;  /*Disable Watchdog*/
   }
+
+/*******************************************************************************
+Function: CLOCKS_Init
+Notes   : Function to initialize Clocks
+*******************************************************************************/
+void CLOCKS_Init(void)
+{
+    CLOCKS_SOSC_init_8MHz();        /*Initialize system oscillator for 8 MHz xtal*/
+    CLOCKS_SPLL_init_160MHz();      /*Initialize SPLL to 160 MHz with 8 MHz SOSC*/
+    CLOCKS_Clock_Setup_80MHz();     /*Initialize clocks: 80MHz sysclk & core, 40MHz bus, 20MHz flash*/
+    CLOCKS_WDOG_disable();          /*Disables the watch dog timer*/        
+}
