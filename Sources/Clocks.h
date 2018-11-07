@@ -15,6 +15,7 @@
 
 #include "S32K144.h" 
 #include "s32_core_cm4.h"
+#include "Definitions.h"
 
 #ifndef CLOCKS_H_
 #define CLOCKS_H_

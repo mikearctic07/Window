@@ -15,6 +15,18 @@
 #ifndef DEFINITIONS_H_
 #define DEFINITIONS_H_
 
+#define SOSCDIV1_SOSCDIV2_DIV1					0x00000101
+#define SOSC_RANGE_1MHZ_8MHZ					0x00000024
+#define SOSCCSR_REGISTER_EN 					0x00000001
+#define SPLL_DISABLED							0x00000000
+#define SPLLDIV1_DIV2_SPLLDIV2_DIV4				0x00000302
+#define PREDIV_SOSC_CLK_BY_1					0x00180000
+#define SPLLCSR_CAN_BE_WRITTEN_NO_LK			0x00000001
+#define SPLL_AS_CLKSOURCE						6
+#define WATCH_DOG_COUNTER_MASK 					0xD928C520
+#define WD_TIMEOUT_MAX 							0x0000FFFF
+#define WD_DISABLE_WATCHDOG						0x00002100
+
 #define PTD0 0    /*  Port PTD0, bit 0: output to blue LED*/
 #define PTD15 15  /*  Port PTD15, bit 15: output to red LED*/
 #define PTD16 16  /*  Port PTD16, bit 16: output to green LED*/
