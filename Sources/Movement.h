@@ -2,7 +2,7 @@
  * Movement.h
  *
  *  Created on:  6 nov. 2018
- *      Author: migue
+ *      Author: alex
  */
 /********************************************************************************
 * File:             Movement.h
