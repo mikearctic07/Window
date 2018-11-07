@@ -36,7 +36,9 @@
 #define OUTPUT_LEDS 0xF3F    	/* Port B, Mask for designed output pins on for Red LED Bar*/
 #define FIRST_5_BITS 0x3F    	/* Port B, First five bits for Red LED bar */
 #define FIRST_10_BITS 0x3FF  	/* Port B, First ten bits for Red LED bar*/
-#define GPIO_ACTIVE 0x00000100 	/*Port B, Mask for the desired outputs on port B*/
+#define GPIO_ACTIVE_MASK 0x00000100 /*Port B, Mask for the desired outputs on port B*/
+#define GPIO_ISF_RISING_EDGE_MASK 0x00098110
+
 #define ANTIPINCH_INTERRUPTION 0x00000100	/*PTC8*/
 #define UP_INTERRUPTION 0x000001000			/*PTC12, up button*/
 #define CLEAR_INTERRUPTION_FLAG 0X1000000	/*1<<24 it clears the interruption flag*/
