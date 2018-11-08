@@ -22,7 +22,7 @@
 
 void CLOCKS_SOSC_init_8MHz(void);
 void CLOCKS_SPLL_init_160MHz(void);
-void CLOCKS_clock_setup_80MHz(void);
+void CLOCKS_Clock_setup_80MHz(void);
 void CLOCKS_WDOG_disable (void);
 void CLOCKS_Init(void);
 
