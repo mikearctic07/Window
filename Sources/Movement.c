@@ -71,9 +71,9 @@ Notes   : Generates  a valid "Up" transition (more than 10 mS and increments eve
 *******************************************************************************/
 void MOVEMENT_Up_Transition(uint32_t counter)
 {
-	PTD->PTOR |=(1<<16);      /*Toggles Green LED while the LED bar increments*/
+	PTD->PTOR |=(1<<LED_BLUE);      /*Toggles Green LED while the LED bar increments*/
     LPIT0_Ch0_IRQHandler(10);  /*LPIT0 timer is initialized with timeout = 10ms*/
-    PTD->PTOR |=(1<<16);      /*Toggles Green LED while the LED bar increments*/
+    PTD->PTOR |=(1<<LED_BLUE);      /*Toggles Green LED while the LED bar increments*/
 
     if ((counter>=1) && (counter%40 ==0)) /* if 40 X 10ms = 400ms, checks for valid time and increments one led every 400ms*/
     {
@@ -89,9 +89,9 @@ Notes   : Generates  a valid "Down" transition (more than 10 mS and increments e
 *******************************************************************************/
 void MOVEMENT_Down_Transition(uint32_t counter)
 {
-	PTD->PTOR |=(1<<0);        /*Toggles Blue LED while the LED bar increments*/
+	PTD->PTOR |=(1<<LED_GREEN);        /*Toggles Blue LED while the LED bar increments*/
     LPIT0_Ch0_IRQHandler(10);  /*LPIT0 timer is initialized with timeout = 10ms*/
-    PTD->PTOR |=(1<<0);        /*Toggles Blue LED while the LED bar increments*/
+    PTD->PTOR |=(1<<LED_GREEN);        /*Toggles Blue LED while the LED bar increments*/
 
     if ((counter>=1) && (counter%40 ==0)) /* if 40 X 10ms = 400ms, checks for valid time and decrements one led every 400ms*/
     {

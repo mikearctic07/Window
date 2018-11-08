@@ -45,9 +45,9 @@
 #define PTC13 									13  /*  Port PTC13, bit 12: input [SW3], button Down*/
 
 /*PORT D MACROS*/
-#define PTD0 									0    /*  Port PTD0, bit 0: output to blue LED*/
-#define PTD15 									15  /*  Port PTD15, bit 15: output to red LED*/
-#define PTD16 									16  /*  Port PTD16, bit 16: output to green LED*/
+#define LED_BLUE 								0    /*  Port PTD0, bit 0: output to blue LED*/
+#define LED_RED 								15  /*  Port PTD15, bit 15: output to red LED*/
+#define LED_GREEN 								16  /*  Port PTD16, bit 16: output to green LED*/
 
 /*LED RED BAR MACROS*/
 #define OUTPUT_LEDS 							0xF3F    	/* Port B, Mask for designed output pins on for Red LED Bar*/

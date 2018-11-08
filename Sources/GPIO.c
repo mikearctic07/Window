@@ -47,20 +47,20 @@ void GPIO_Init(void)
     PORTB->PCR[PTB11] = GPIO_ACTIVE_MASK;  /*Port B pins 0 to 5, MUX = GPIO*/
 
 
-    PTD->PDDR |= 1<<PTD0;        /*Port D0: Data Direction= output*/
-    PORTD->PCR[PTD0] = GPIO_ACTIVE_MASK; /*Port D0: MUX = GPIO*/
+    PTD->PDDR |= 1<<LED_BLUE;        /*Port D0: Data Direction= output*/
+    PORTD->PCR[LED_BLUE] = GPIO_ACTIVE_MASK; /*Port D0: MUX = GPIO*/
 
-    PTD->PDDR |= 1<<PTD15;       /*Port D15: Data Direction= output*/
-    PORTD->PCR[PTD15] = GPIO_ACTIVE_MASK;/*Port D15: MUX = GPIO*/
+    PTD->PDDR |= 1<<LED_RED;       /*Port D15: Data Direction= output*/
+    PORTD->PCR[LED_RED] = GPIO_ACTIVE_MASK;/*Port D15: MUX = GPIO*/
 
-    PTD->PDDR |= 1<<PTD16;       /*Port D16: Data Direction= output*/
-    PORTD->PCR[PTD16] = GPIO_ACTIVE_MASK;/*Port D16: MUX = GPIO*/
+    PTD->PDDR |= 1<<LED_GREEN;       /*Port D16: Data Direction= output*/
+    PORTD->PCR[LED_GREEN] = GPIO_ACTIVE_MASK;/*Port D16: MUX = GPIO*/
 
     PTC->PDDR &= ~(1<<PTC8);     /*Port C8: Data Direction = input*/
     PORTC->PCR[PTC8] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
     				|GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN
 					|GPIO_INPUT_PULLDOWN_R_EN);  /*Port C8: MUX= GPIO, ISF on rising edge*/
 
-    PTD-> PSOR |= (1<<PTD0|1<<PTD15|1<<PTD16);  /*Set the LEDS RED, BLUE off */
+    PTD-> PSOR |= (1<<LED_BLUE|1<<LED_RED|1<<LED_GREEN);  /*Set the LEDS RED, BLUE off */
     PTB-> PSOR |= OUTPUT_LEDS; 		/*Set the Red Led Bar pins off */
 }
