@@ -91,3 +91,8 @@ void PORTC_IRQHandler(void)
 		}
 	}
 }
+
+void INTERRUPTIONS_Init_PORTC(void)
+{
+    INT_SYS_EnableIRQ(PORTC_IRQn);  /*Enable desired interrupts on PORT C*/
+}

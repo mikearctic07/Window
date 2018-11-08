@@ -15,6 +15,8 @@
 
 #include "S32K144.h" /* include peripheral declarations S32K144 */
 #include "s32_core_cm4.h"
+#include "Cpu.h"
+
 #include "Movement.h"
 #include "Definitions.h"
 
@@ -23,5 +25,6 @@
 
 void LPIT0_Ch0_IRQHandler (__IO uint32_t );
 void PORTC_IRQHandler(void);
+void INTERRUPTIONS_Init_PORTC(void);
 
 #endif /* INTERRUPTIONS */

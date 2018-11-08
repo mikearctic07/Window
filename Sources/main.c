@@ -41,9 +41,8 @@ int main(void)
   /* Write your code here */
 
     CLOCKS_Init();
-    GPIO_Init();  			/*Initialize the GPIO pins---Inputs---Outputs----Interrupt Buttons---*/
-    INT_SYS_EnableIRQ(PORTC_IRQn);  /*Enable desired interrupts on PORT C*/
-    INT_SYS_EnableIRQ(PORTA_IRQn);  /*Enable desired interrupts on PORT A*/
+    GPIO_Init();  			/*Initialize the GPIO 0pins---Inputs---Outputs----Interrupt Buttons---*/
+    INTERRUPTIONS_Init_PORTC();
 
   /*** Don't write any code pass this line, or it will be deleted during code generation. ***/
   /*** RTOS startup code. Macro PEX_RTOS_START is defined by the RTOS component. DON'T MODIFY THIS CODE!!! ***/
