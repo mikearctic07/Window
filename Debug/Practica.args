@@ -1,4 +1,8 @@
 "./Sources/main.o"
+"./Sources/Movement.o"
+"./Sources/Interruptions.o"
+"./Sources/GPIO.o"
+"./Sources/Clocks.o"
 "./SDK/platform/drivers/src/pins/pins_port_hw_access.o"
 "./SDK/platform/drivers/src/pins/pins_driver.o"
 "./SDK/platform/drivers/src/interrupt/interrupt_manager.o"
