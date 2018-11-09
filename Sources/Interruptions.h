@@ -23,7 +23,7 @@
 #ifndef INTERRUPTIONS_H_
 #define INTERRUPTIONS_H_
 
-void LPIT0_Ch0_IRQHandler (__IO uint32_t );
+void LPIT0_Ch0_IRQHandler (uint32_t MILIS);
 void PORTC_IRQHandler(void);
 void INTERRUPTIONS_Init_PORTC(void);
 
