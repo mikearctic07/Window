@@ -25,11 +25,13 @@ void GPIO_Init(void)
 
     PTC->PDDR &= ~(1<<PTC12);     /*Port C12: Data Direction = input (default) */
     PORTC->PCR[PTC12] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
-					 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN);  /*Port C12: MUX=GPIO, ISF flag on rising-edge*/
+					 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN|
+                     GPIO_INPUT_PULLDOWN_R_EN);  /*Port C12: MUX=GPIO, ISF flag on rising-edge*/
 
     PTC->PDDR &= ~(1<<PTC13);     /*Port C12: Data Direction = input */
     PORTC->PCR[PTC13] |= (GPIO_ACTIVE_MASK|GPIO_ISF_RISING_EDGE_MASK
-    				 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN);  /*Port C13: MUX=GPIO, ISF flag on rising-edge*/
+    				 |GPIO_LK_REGISTER_MASK|GPIO_PASSIVE_FILTER_EN
+                     |GPIO_INPUT_PULLDOWN_R_EN);  /*Port C13: MUX=GPIO, ISF flag on rising-edge*/
 
     /*PTB6 and PTB7 are not used because they're reserved for external oscillator*/
     PTB->PDDR |= OUTPUT_LEDS; /*Port D: Mask of bits configured as outputs*/
